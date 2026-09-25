@@ -1,300 +1,321 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-/// Visual style of a [AppButton].
-enum AppButtonVariant { filled, outlined, text }
+import '../app_platform.dart';
+import '../enums/button_varient.dart';
 
-/// A fully customizable button with optional [subtitle], [leading],
-/// [trailing] widgets and a [isLoading] state.
+/// A themed button supporting all [ButtonVariant]s and [ButtonSize]s.
 ///
-/// Colors and text styles default to the ambient [Theme].
+/// Renders Material or Cupertino based on [platform] / [AppPlatformScope].
+/// Colors default to the ambient [ThemeData.colorScheme]; every dimension,
+/// color, radius and animation value can be overridden via parameters, so the
+/// widget has no dependency on any app-specific tokens or screen-scaling
+/// package. Pass already-scaled values (e.g. `16.w`) if your app scales sizes.
 ///
+/// Usage:
 /// ```dart
 /// AppButton(
-///   label: 'Pay now',
-///   subtitle: 'Total \$25.00',
-///   leading: const Icon(Icons.lock),
-///   trailing: const Icon(Icons.arrow_forward),
-///   isLoading: submitting,
-///   onPressed: submit,
+///   label: 'Save',
+///   onPressed: _save,
+///   variant: ButtonVariant.primary,
+///   height: ButtonSize.large,
+///   isLoading: state.isLoading,
+///   borderRadius: BorderRadius.circular(12),
 /// )
 /// ```
 class AppButton extends StatelessWidget {
+  /// Creates a button.
   const AppButton({
     super.key,
-    this.label,
-    this.child,
-    this.subtitle,
-    this.leading,
-    this.trailing,
+    required this.label,
     this.onPressed,
-    this.onLongPress,
-    this.isLoading = false,
-    this.loadingWidget,
-    this.loadingLabel,
-    this.variant = AppButtonVariant.filled,
-    this.isExpanded = true,
-    this.backgroundColor,
-    this.foregroundColor,
-    this.disabledBackgroundColor,
-    this.disabledForegroundColor,
+    this.variant = ButtonVariant.primary,
+    this.color,
+    this.textColor,
     this.borderColor,
-    this.borderWidth = 1.5,
-    this.borderRadius = 12,
-    this.elevation,
-    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-    this.minHeight = 48,
+    this.height = ButtonSize.medium,
     this.width,
-    this.height,
-    this.labelStyle,
-    this.subtitleStyle,
-    this.gap = 10,
+    this.isLoading = false,
+    this.isFullWidth = false,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.platform,
+    this.heightValue,
+    this.widthValue,
+    this.horizontalPadding,
+    this.fontSize,
+    this.fontWeight = FontWeight.w600,
+    this.borderRadius = const BorderRadius.all(Radius.circular(12)),
+    this.borderWidth = 1.5,
+    this.iconSpacing = 8,
     this.loaderSize = 20,
-    this.loaderStrokeWidth = 2.5,
-    this.alignment = MainAxisAlignment.center,
-    this.textAlign = TextAlign.start,
-    this.tooltip,
-    this.focusNode,
-    this.autofocus = false,
-  }) : assert(
-         label != null || child != null,
-         'Provide either a label or a child.',
-       );
+    this.loaderStrokeWidth = 2,
+    this.disabledOpacity = 0.6,
+    this.disabledTextOpacity = 0.5,
+    this.animationDuration = const Duration(milliseconds: 200),
+    this.animationCurve = Curves.easeOut,
+    this.successColor,
+    this.onSuccessColor,
+    this.semanticLabel,
+  });
 
-  /// Main text. Ignored when [child] is provided.
-  final String? label;
+  /// Text shown inside the button.
+  final String label;
 
-  /// Custom content replacing [label] and [subtitle].
-  final Widget? child;
-
-  /// Smaller text shown under [label].
-  final String? subtitle;
-
-  /// Widget shown before the text (e.g. an icon).
-  final Widget? leading;
-
-  /// Widget shown after the text (e.g. an arrow).
-  final Widget? trailing;
-
-  /// Called on tap. The button is disabled when null or while [isLoading].
+  /// Called when tapped. A null value (or [isLoading]) disables the button.
   final VoidCallback? onPressed;
-  final VoidCallback? onLongPress;
 
-  /// Shows a progress indicator and blocks taps.
+  /// Visual style of the button.
+  final ButtonVariant variant;
+
+  /// Background color override for filled variants. Defaults come from the
+  /// theme's color scheme.
+  final Color? color;
+
+  /// Label/icon color override.
+  final Color? textColor;
+
+  /// Outlines the button regardless of [variant] — lets a filled button carry
+  /// a hairline border (social sign-in rows, cards on tinted surfaces).
+  final Color? borderColor;
+
+  /// Preset size controlling height, padding and font size.
+  final ButtonSize height;
+
+  /// Preset width. Ignored when [widthValue] or [isFullWidth] is set.
+  final ButtonSize? width;
+
+  /// Shows a loader in place of the content and disables the button.
   final bool isLoading;
 
-  /// Replaces the default [CircularProgressIndicator].
-  final Widget? loadingWidget;
+  /// Expands the button to the available width.
+  final bool isFullWidth;
 
-  /// Optional text shown next to the loader instead of the normal content.
-  final String? loadingLabel;
+  /// Widget shown before the label.
+  final Widget? prefixIcon;
 
-  final AppButtonVariant variant;
+  /// Widget shown after the label.
+  final Widget? suffixIcon;
 
-  /// Fill the available width (true) or wrap content (false).
-  final bool isExpanded;
+  /// Overrides Material/Cupertino rendering for this button.
+  final AppPlatformStyle? platform;
 
-  final Color? backgroundColor;
-  final Color? foregroundColor;
-  final Color? disabledBackgroundColor;
-  final Color? disabledForegroundColor;
-  final Color? borderColor;
+  /// Explicit height in logical pixels; overrides the [height] preset.
+  final double? heightValue;
+
+  /// Explicit width in logical pixels; overrides the [width] preset.
+  final double? widthValue;
+
+  /// Explicit horizontal padding; overrides the [height] preset padding.
+  final double? horizontalPadding;
+
+  /// Explicit label font size; overrides the [height] preset font size.
+  final double? fontSize;
+
+  /// Label font weight.
+  final FontWeight fontWeight;
+
+  /// Corner radius of the button.
+  final BorderRadius borderRadius;
+
+  /// Width of the border for [ButtonVariant.outline] or when [borderColor]
+  /// is set.
   final double borderWidth;
-  final double borderRadius;
-  final double? elevation;
-  final EdgeInsetsGeometry padding;
-  final double minHeight;
 
-  /// Fixed size overrides. Take precedence over [isExpanded] / [minHeight].
-  final double? width;
-  final double? height;
+  /// Gap between the label and the prefix/suffix icons.
+  final double iconSpacing;
 
-  final TextStyle? labelStyle;
-  final TextStyle? subtitleStyle;
-
-  /// Space between leading/text/trailing.
-  final double gap;
+  /// Width and height of the loading indicator.
   final double loaderSize;
-  final double loaderStrokeWidth;
-  final MainAxisAlignment alignment;
-  final TextAlign textAlign;
-  final String? tooltip;
-  final FocusNode? focusNode;
-  final bool autofocus;
 
-  bool get _enabled => onPressed != null && !isLoading;
+  /// Stroke width of the Material loading indicator.
+  final double loaderStrokeWidth;
+
+  /// Opacity of the whole button while disabled or loading.
+  final double disabledOpacity;
+
+  /// Extra opacity applied to the label while disabled.
+  final double disabledTextOpacity;
+
+  /// Duration of the loading/disabled transitions.
+  final Duration animationDuration;
+
+  /// Curve of the loading content switch.
+  final Curve animationCurve;
+
+  /// Background of [ButtonVariant.success]. Defaults to the theme's
+  /// `tertiary` color.
+  final Color? successColor;
+
+  /// Foreground of [ButtonVariant.success]. Defaults to the theme's
+  /// `onTertiary` color.
+  final Color? onSuccessColor;
+
+  /// Accessibility label. Defaults to [label].
+  final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
-    final isFilled = variant == AppButtonVariant.filled;
+    final useCupertino = context.resolveCupertinoUi(platform);
+    final cs = Theme.of(context).colorScheme;
+    final isDisabled = onPressed == null || isLoading;
 
-    final fg = foregroundColor ??
-        (isFilled ? scheme.onPrimary : scheme.primary);
-    final bg = backgroundColor ?? (isFilled ? scheme.primary : null);
-    final disabledFg =
-        disabledForegroundColor ?? scheme.onSurface.withValues(alpha: 0.38);
-    final disabledBg = disabledBackgroundColor ??
-        (isFilled ? scheme.onSurface.withValues(alpha: 0.12) : null);
+    final double buttonHeight = heightValue ??
+        switch (height) {
+          ButtonSize.small => 36,
+          ButtonSize.medium => 44,
+          ButtonSize.large => 56,
+        };
 
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(borderRadius),
-      side: variant == AppButtonVariant.outlined
-          ? BorderSide(
-              color: _enabled || isLoading
-                  ? (borderColor ?? fg)
-                  : disabledFg.withValues(alpha: 0.3),
-              width: borderWidth,
-            )
-          : BorderSide.none,
-    );
+    final double? buttonWidth = widthValue ??
+        switch (width) {
+          ButtonSize.small => 100,
+          ButtonSize.medium => 150,
+          ButtonSize.large => 200,
+          null => null,
+        };
 
-    // While loading keep the enabled look instead of flashing disabled colors.
-    final style = ButtonStyle(
-      backgroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.disabled) && !isLoading) {
-          return disabledBg;
-        }
-        return bg;
-      }),
-      foregroundColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.disabled) && !isLoading) {
-          return disabledFg;
-        }
-        return fg;
-      }),
-      elevation: WidgetStatePropertyAll(isFilled ? (elevation ?? 0) : 0),
-      shape: WidgetStatePropertyAll(shape),
-      padding: WidgetStatePropertyAll(padding),
-      minimumSize: WidgetStatePropertyAll(Size(0, minHeight)),
-      tapTargetSize: MaterialTapTargetSize.padded,
-    );
+    final double hPadding = horizontalPadding ??
+        switch (height) {
+          ButtonSize.small => 12,
+          ButtonSize.medium => 20,
+          ButtonSize.large => 28,
+        };
 
-    // Passing null callbacks disables the Material button; loading must
-    // block taps but keep the enabled appearance, so use no-op handlers.
-    final VoidCallback? tap =
-        isLoading ? () {} : (_enabled ? onPressed : null);
-    final VoidCallback? longPress =
-        isLoading ? null : (_enabled ? onLongPress : null);
+    final double resolvedFontSize = fontSize ??
+        switch (height) {
+          ButtonSize.small => 12,
+          ButtonSize.medium => 14,
+          ButtonSize.large => 16,
+        };
 
-    final content = _buildContent(context, theme);
-
-    Widget button = switch (variant) {
-      AppButtonVariant.filled => ElevatedButton(
-          onPressed: tap,
-          onLongPress: longPress,
-          style: style,
-          focusNode: focusNode,
-          autofocus: autofocus,
-          child: content,
+    final (bg, fg, border) = switch (variant) {
+      ButtonVariant.primary => (
+          color ?? cs.primary,
+          textColor ?? cs.onPrimary,
+          null,
         ),
-      AppButtonVariant.outlined => OutlinedButton(
-          onPressed: tap,
-          onLongPress: longPress,
-          style: style,
-          focusNode: focusNode,
-          autofocus: autofocus,
-          child: content,
+      ButtonVariant.secondary => (
+          color ?? cs.secondaryContainer,
+          textColor ?? cs.onSecondaryContainer,
+          null,
         ),
-      AppButtonVariant.text => TextButton(
-          onPressed: tap,
-          onLongPress: longPress,
-          style: style,
-          focusNode: focusNode,
-          autofocus: autofocus,
-          child: content,
+      ButtonVariant.outline => (
+          Colors.transparent,
+          textColor ?? cs.primary,
+          BorderSide(color: cs.outline, width: borderWidth),
+        ),
+      ButtonVariant.ghost => (
+          Colors.transparent,
+          textColor ?? cs.primary,
+          null,
+        ),
+      ButtonVariant.danger => (
+          color ?? cs.error,
+          textColor ?? cs.onError,
+          null,
+        ),
+      ButtonVariant.success => (
+          color ?? successColor ?? cs.tertiary,
+          textColor ?? onSuccessColor ?? cs.onTertiary,
+          null,
         ),
     };
 
-    if (tooltip != null) button = Tooltip(message: tooltip!, child: button);
+    final resolvedBorder = borderColor != null
+        ? BorderSide(color: borderColor!, width: borderWidth)
+        : border;
 
-    button = Semantics(
-      button: true,
-      enabled: _enabled,
-      label: isLoading ? (loadingLabel ?? label) : null,
-      child: button,
+    final child = AnimatedSwitcher(
+      duration: animationDuration,
+      switchInCurve: animationCurve,
+      child: isLoading
+          ? SizedBox(
+              key: const ValueKey('loader'),
+              width: loaderSize,
+              height: loaderSize,
+              child: useCupertino
+                  ? CupertinoActivityIndicator(color: fg)
+                  : CircularProgressIndicator(
+                      strokeWidth: loaderStrokeWidth,
+                      color: fg,
+                    ),
+            )
+          : Row(
+              key: const ValueKey('content'),
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (prefixIcon != null) ...[
+                  prefixIcon!,
+                  SizedBox(width: iconSpacing),
+                ],
+                // Flexible so a long label ellipsizes instead of overflowing
+                // the button's fixed height.
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: resolvedFontSize,
+                      fontWeight: fontWeight,
+                      color: isDisabled
+                          ? fg.withValues(alpha: disabledTextOpacity)
+                          : fg,
+                    ),
+                  ),
+                ),
+                if (suffixIcon != null) ...[
+                  SizedBox(width: iconSpacing),
+                  suffixIcon!,
+                ],
+              ],
+            ),
     );
 
-    if (width != null || height != null) {
-      return SizedBox(width: width, height: height, child: button);
-    }
-    return isExpanded
-        ? SizedBox(width: double.infinity, child: button)
-        : button;
-  }
-
-  Widget _buildContent(BuildContext context, ThemeData theme) {
-    final textColor = DefaultTextStyle.of(context).style.color;
-
-    if (isLoading) {
-      final loader = loadingWidget ??
-          SizedBox(
-            width: loaderSize,
-            height: loaderSize,
-            child: CircularProgressIndicator(
-              strokeWidth: loaderStrokeWidth,
-              color: foregroundColor ??
-                  (variant == AppButtonVariant.filled
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.primary),
-            ),
-          );
-      return Row(
-        mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
-        mainAxisAlignment: alignment,
-        children: [
-          loader,
-          if (loadingLabel != null) ...[
-            SizedBox(width: gap),
-            Flexible(
-              child: Text(
-                loadingLabel!,
-                style: labelStyle,
-                overflow: TextOverflow.ellipsis,
+    final sized = SizedBox(
+      width: isFullWidth ? double.infinity : buttonWidth,
+      height: buttonHeight,
+      child: useCupertino
+          ? CupertinoButton(
+              padding: EdgeInsets.symmetric(horizontal: hPadding),
+              color: variant == ButtonVariant.outline ||
+                      variant == ButtonVariant.ghost
+                  ? null
+                  : bg,
+              borderRadius: borderRadius,
+              onPressed: isDisabled ? null : onPressed,
+              child: DefaultTextStyle.merge(
+                style: TextStyle(color: fg),
+                child: child,
               ),
-            ),
-          ],
-        ],
-      );
-    }
-
-    final textBlock = child ??
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: switch (textAlign) {
-            TextAlign.center => CrossAxisAlignment.center,
-            TextAlign.end || TextAlign.right => CrossAxisAlignment.end,
-            _ => CrossAxisAlignment.start,
-          },
-          children: [
-            Text(
-              label!,
-              textAlign: textAlign,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelLarge
-                  ?.copyWith(fontWeight: FontWeight.w600)
-                  .merge(labelStyle),
-            ),
-            if (subtitle != null)
-              Text(
-                subtitle!,
-                textAlign: textAlign,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: textColor?.withValues(alpha: 0.8))
-                    .merge(subtitleStyle),
+            )
+          : TextButton(
+              onPressed: isDisabled ? null : onPressed,
+              style: TextButton.styleFrom(
+                backgroundColor: bg,
+                foregroundColor: fg,
+                padding: EdgeInsets.symmetric(horizontal: hPadding),
+                shape: RoundedRectangleBorder(
+                  borderRadius: borderRadius,
+                  side: resolvedBorder ?? BorderSide.none,
+                ),
               ),
-          ],
-        );
+              child: child,
+            ),
+    );
 
-    return Row(
-      mainAxisSize: isExpanded ? MainAxisSize.max : MainAxisSize.min,
-      mainAxisAlignment: alignment,
-      children: [
-        if (leading != null) ...[leading!, SizedBox(width: gap)],
-        Flexible(child: textBlock),
-        if (trailing != null) ...[SizedBox(width: gap), trailing!],
-      ],
+    return Semantics(
+      button: true,
+      enabled: !isDisabled,
+      label: semanticLabel ?? label,
+      excludeSemantics: true,
+      child: AnimatedOpacity(
+        duration: animationDuration,
+        opacity: isDisabled ? disabledOpacity : 1.0,
+        child: sized,
+      ),
     );
   }
 }
