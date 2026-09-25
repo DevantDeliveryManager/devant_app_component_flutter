@@ -2,6 +2,11 @@
 
 A reusable Flutter widget library: buttons and form widgets that follow your app's theme (light and dark) and are fully customizable. It is shared across multiple apps.
 
+[![GitHub stars](https://img.shields.io/github/stars/DevantDeliveryManager/devant_app_component_flutter?style=for-the-badge&logo=github)](https://github.com/DevantDeliveryManager/devant_app_component_flutter/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/DevantDeliveryManager/devant_app_component_flutter?style=for-the-badge&logo=github)](https://github.com/DevantDeliveryManager/devant_app_component_flutter/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/DevantDeliveryManager/devant_app_component_flutter?style=for-the-badge&logo=github)](https://github.com/DevantDeliveryManager/devant_app_component_flutter/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/DevantDeliveryManager/devant_app_component_flutter?style=for-the-badge&logo=github)](https://github.com/DevantDeliveryManager/devant_app_component_flutter/commits/main)
+
 ## Installation
 
 Add the package to your app's `pubspec.yaml` as a git dependency:
@@ -10,7 +15,7 @@ Add the package to your app's `pubspec.yaml` as a git dependency:
 dependencies:
   devant_components:
     git:
-      url: https://github.com/swagatapaldevant/devant_app_componant_flutter.git
+      url: https://github.com/DevantDeliveryManager/devant_app_component_flutter.git
 ```
 
 Then run:
@@ -27,7 +32,7 @@ Without `ref`, Flutter uses the default branch. To keep your app stable, pin to 
 dependencies:
   devant_components:
     git:
-      url: https://github.com/swagatapaldevant/devant_app_componant_flutter.git
+      url: https://github.com/DevantDeliveryManager/devant_app_component_flutter.git
       ref: v0.0.1   # tag, branch name or commit hash
 ```
 
@@ -39,13 +44,6 @@ Git dependencies are locked in `pubspec.lock`. To pull newer commits:
 flutter pub upgrade devant_components
 ```
 
-### Private repository
-
-If the repo is private, your machine needs git access to it (SSH key or a credential helper). With SSH, use the SSH url instead:
-
-```yaml
-url: git@github.com:swagatapaldevant/devant_app_componant_flutter.git
-```
 
 ## Usage
 
@@ -55,91 +53,7 @@ Import once. Everything is exported from a single file:
 import 'package:devant_components/devant_components.dart';
 ```
 
-### AppButton
 
-Filled, outlined and text variants, with a subtitle, leading and trailing widgets and a loading state.
-
-```dart
-AppButton(
-  label: 'Pay now',
-  subtitle: 'Total \$25.00',
-  leading: const Icon(Icons.lock),
-  trailing: const Icon(Icons.arrow_forward),
-  isLoading: isSubmitting,
-  onPressed: submit,
-)
-
-AppButton(
-  label: 'Cancel',
-  variant: AppButtonVariant.outlined,
-  isExpanded: false,
-  onPressed: () => Navigator.pop(context),
-)
-```
-
-Useful options: `variant`, `isLoading`, `loadingLabel`, `loadingWidget`, `backgroundColor`, `foregroundColor`, `borderRadius`, `borderColor`, `elevation`, `padding`, `width`, `height`, `labelStyle`, `subtitleStyle`, `tooltip`, or a fully custom `child`. A button with no `onPressed` is shown disabled.
-
-### Forms
-
-All form widgets work inside a `Form`, so `formKey.currentState!.validate()` checks them together.
-
-```dart
-final _formKey = GlobalKey<FormState>();
-
-Form(
-  key: _formKey,
-  child: Column(
-    children: [
-      AppTextField(
-        label: 'Email',
-        hint: 'you@example.com',
-        prefix: const Icon(Icons.email_outlined),
-        keyboardType: TextInputType.emailAddress,
-        validator: (v) => (v ?? '').contains('@') ? null : 'Invalid email',
-      ),
-      const AppTextField(
-        label: 'Password',
-        isPassword: true, // built-in show/hide toggle
-      ),
-      AppDropdown<String>(
-        label: 'Country',
-        items: const ['India', 'USA', 'UK'],
-        onChanged: (v) => setState(() => country = v),
-        validator: (v) => v == null ? 'Pick a country' : null,
-      ),
-      AppDatePicker(
-        label: 'Date of birth',
-        lastDate: DateTime.now(),
-        onChanged: (d) => setState(() => dob = d),
-      ),
-      AppRadio<String>(
-        label: 'Gender',
-        value: gender,
-        options: const [
-          AppRadioOption(value: 'm', label: 'Male'),
-          AppRadioOption(value: 'f', label: 'Female'),
-        ],
-        onChanged: (v) => setState(() => gender = v),
-      ),
-      AppChips<String>(
-        label: 'Interests',
-        items: const ['Music', 'Sports', 'Travel'],
-        value: interests,
-        multiSelect: true,
-        onChanged: (v) => setState(() => interests = v),
-      ),
-      AppButton(
-        label: 'Submit',
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            // submit
-          }
-        },
-      ),
-    ],
-  ),
-)
-```
 
 | Widget | Purpose |
 |---|---|
