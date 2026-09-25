@@ -14,6 +14,11 @@ InputDecoration buildAppInputDecoration(
   Color? fillColor,
   Color? borderColor,
   Color? focusedBorderColor,
+  Color? errorBorderColor,
+  TextStyle? hintStyle,
+  TextStyle? labelStyle,
+  double borderWidth = 1,
+  double focusedBorderWidth = 2,
   double borderRadius = 12,
   EdgeInsetsGeometry? contentPadding,
   int? maxLength,
@@ -21,18 +26,21 @@ InputDecoration buildAppInputDecoration(
 }) {
   final scheme = Theme.of(context).colorScheme;
 
-  OutlineInputBorder border(Color color, [double width = 1]) =>
+  OutlineInputBorder border(Color color, [double? width]) =>
       OutlineInputBorder(
         borderRadius: BorderRadius.circular(borderRadius),
-        borderSide: BorderSide(color: color, width: width),
+        borderSide: BorderSide(color: color, width: width ?? borderWidth),
       );
 
   final base = borderColor ?? scheme.outlineVariant;
+  final errorColor = errorBorderColor ?? scheme.error;
   final focused = focusedBorderColor ?? scheme.primary;
 
   return InputDecoration(
     labelText: label,
     hintText: hint,
+    hintStyle: hintStyle,
+    labelStyle: labelStyle,
     helperText: helper,
     errorText: error,
     prefixIcon: prefix,
@@ -44,9 +52,9 @@ InputDecoration buildAppInputDecoration(
     counterText: showCounter ? null : '',
     enabledBorder: border(base),
     border: border(base),
-    focusedBorder: border(focused, 2),
-    errorBorder: border(scheme.error),
-    focusedErrorBorder: border(scheme.error, 2),
+    focusedBorder: border(focused, focusedBorderWidth),
+    errorBorder: border(errorColor),
+    focusedErrorBorder: border(errorColor, focusedBorderWidth),
     disabledBorder: border(base.withValues(alpha: 0.4)),
   );
 }

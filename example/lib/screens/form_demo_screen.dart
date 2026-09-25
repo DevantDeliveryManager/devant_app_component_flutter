@@ -49,7 +49,7 @@ class _FormDemoScreenState extends State<FormDemoScreen> {
               ),
               const AppTextField(
                 label: 'Password',
-                isPassword: true,
+                type: AppFieldType.password,
                 prefix: Icon(Icons.lock_outline),
               ),
               const AppTextField(
@@ -61,6 +61,24 @@ class _FormDemoScreenState extends State<FormDemoScreen> {
               ),
               const AppTextField(label: 'External error', errorText: 'Taken'),
               const AppTextField(label: 'Disabled', enabled: false),
+              const AppTextField(
+                type: AppFieldType.phone,
+                label: 'Phone (digits only)',
+                prefix: Icon(Icons.phone_outlined),
+              ),
+              const AppTextField(
+                type: AppFieldType.multiline,
+                label: 'Multiline',
+              ),
+              const AppTextField(
+                label: 'Themed via parameters',
+                fillColor: Color(0xFFF3E5F5),
+                borderColor: Color(0xFFCE93D8),
+                labelColor: Colors.purple,
+                labelFontSize: 16,
+                hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                hint: 'Colors and sizes come from the caller',
+              ),
               AppTextField(
                 label: 'Custom style',
                 filled: false,
