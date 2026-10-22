@@ -11,5 +11,5 @@ class RuleKeys {
   static const String serviceLocationDirection = 'service_location_direction';
   static const String serviceDescription = 'service_description';
   static const String servicePreparationSteps = 'service_preparation';
-  static const joiningQuestionsRule = 'service_joining_questions';
+  static const String joiningQuestionsRule = 'service_joining_questions';
 }
