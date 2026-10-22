@@ -1,117 +1,189 @@
+import 'package:flutter/cupertino.dart' hide RefreshCallback;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'app_input_decoration.dart';
+import '../devant_components.dart';
+import '../extensions/context_extension.dart';
+import '../theme/app_borders.dart';
+import '../theme/app_spacing.dart';
 
-/// A read-only field that opens the Material date picker. Plugs into [Form].
-///
-/// ```dart
-/// AppDatePicker(
-///   label: 'Date of birth',
-///   lastDate: DateTime.now(),
-///   onChanged: (d) => setState(() => dob = d),
-/// )
-/// ```
-class AppDatePicker extends FormField<DateTime> {
-  AppDatePicker({
+
+/// A date field that opens a Material dialog or Cupertino modal picker.
+
+class AppDatePicker extends StatelessWidget {
+  const AppDatePicker({
     super.key,
-    DateTime? value,
-    ValueChanged<DateTime?>? onChanged,
-    String? label,
-    String? hint = 'Select date',
-    String? helper,
-    String? errorText,
-    Widget? prefix = const Icon(Icons.calendar_today_outlined),
-    bool clearable = true,
-    DateTime? firstDate,
-    DateTime? lastDate,
-    String Function(DateTime date)? dateFormatter,
-    DatePickerEntryMode entryMode = DatePickerEntryMode.calendar,
-    String? helpText,
-    super.validator,
-    super.autovalidateMode,
-    super.enabled,
-    bool filled = true,
-    Color? fillColor,
-    Color? borderColor,
-    Color? focusedBorderColor,
-    double borderRadius = 12,
-    EdgeInsetsGeometry? contentPadding,
-  }) : super(
-         initialValue: value,
-         builder: (state) {
-           final context = state.context;
-           final format = dateFormatter ?? _defaultFormat;
-           final date = state.value;
+    this.value,
+    required this.onChanged,
+    this.label,
+    this.hint = 'Select date',
+    this.firstDate,
+    this.lastDate,
+    this.enabled = true,
+    this.platform,
+  });
 
-           Future<void> pick() async {
-             final now = DateTime.now();
-             final first = firstDate ?? DateTime(1900);
-             final last = lastDate ?? DateTime(2100);
-             var initial = date ?? now;
-             if (initial.isBefore(first)) initial = first;
-             if (initial.isAfter(last)) initial = last;
+  final DateTime? value;
+  final ValueChanged<DateTime> onChanged;
+  final String? label;
+  final String hint;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final bool enabled;
+  final AppPlatformStyle? platform;
 
-             final picked = await showDatePicker(
-               context: context,
-               initialDate: initial,
-               firstDate: first,
-               lastDate: last,
-               initialEntryMode: entryMode,
-               helpText: helpText,
-             );
-             if (picked != null) {
-               state.didChange(picked);
-               onChanged?.call(picked);
-             }
-           }
+  DateTime get _first => firstDate ?? DateTime(1900);
+  DateTime get _last => lastDate ?? DateTime(2100);
 
-           void clear() {
-             state.didChange(null);
-             onChanged?.call(null);
-           }
+  String _format(DateTime d) {
+    final mm = d.month.toString().padLeft(2, '0');
+    final dd = d.day.toString().padLeft(2, '0');
+    return '${d.year}-$mm-$dd';
+  }
 
-           final decoration = buildAppInputDecoration(
-             context,
-             label: label,
-             hint: hint,
-             helper: helper,
-             error: state.errorText ?? errorText,
-             prefix: prefix,
-             suffix: clearable && date != null && state.widget.enabled
-                 ? IconButton(
-                     tooltip: 'Clear',
-                     icon: const Icon(Icons.close),
-                     onPressed: clear,
-                   )
-                 : null,
-             filled: filled,
-             fillColor: fillColor,
-             borderColor: borderColor,
-             focusedBorderColor: focusedBorderColor,
-             borderRadius: borderRadius,
-             contentPadding: contentPadding,
-           ).copyWith(
-             floatingLabelBehavior:
-                 hint != null ? FloatingLabelBehavior.always : null,
-             enabled: state.widget.enabled,
-           );
+  Future<void> _pick(BuildContext context) async {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final initial = value ?? DateTime.now();
 
-           return InkWell(
-             borderRadius: BorderRadius.circular(borderRadius),
-             onTap: state.widget.enabled ? pick : null,
-             child: InputDecorator(
-               decoration: decoration,
-               isEmpty: date == null,
-               child: date == null
-                   ? null
-                   : Text(format(date), overflow: TextOverflow.ellipsis),
-             ),
-           );
-         },
-       );
+    if (useCupertino) {
+      var temp = initial;
+      await showCupertinoModalPopup<void>(
+        context: context,
+        builder: (ctx) {
+          return Container(
+            height: 300.h,
+            color: cs.surface,
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  color: cs.surfaceContainerHighest,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CupertinoButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text('Cancel',
+                            style: TextStyle(color: cs.onSurfaceVariant)),
+                      ),
+                      CupertinoButton(
+                        onPressed: () {
+                          onChanged(temp);
+                          Navigator.of(ctx).pop();
+                        },
+                        child: Text(
+                          'Done',
+                          style: TextStyle(
+                            color: cs.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: initial,
+                    minimumDate: _first,
+                    maximumDate: _last,
+                    onDateTimeChanged: (d) => temp = d,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+      return;
+    }
 
-  static String _defaultFormat(DateTime d) =>
-      '${d.year.toString().padLeft(4, '0')}-'
-      '${d.month.toString().padLeft(2, '0')}-'
-      '${d.day.toString().padLeft(2, '0')}';
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial.isBefore(_first) || initial.isAfter(_last)
+          ? DateTime.now()
+          : initial,
+      firstDate: _first,
+      lastDate: _last,
+    );
+    if (picked != null) onChanged(picked);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final useCupertino = platform != null
+        ? platform == AppPlatformStyle.cupertino
+        : context.isCupertinoUi;
+    final cs = context.colors;
+    final tt = context.textTheme;
+    final display = value != null ? _format(value!) : hint;
+
+    final field = GestureDetector(
+      onTap: enabled ? () => _pick(context) : null,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.ms,
+        ),
+        decoration: BoxDecoration(
+          color: useCupertino ? cs.surfaceContainerHighest : null,
+          borderRadius: AppBorders.input,
+          border: Border.all(color: cs.outlineVariant),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (label != null && !useCupertino)
+                    Text(
+                      label!,
+                      style:
+                          tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                    ),
+                  Text(
+                    display,
+                    style: tt.bodyLarge?.copyWith(
+                      color: value == null ? cs.onSurfaceVariant : cs.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              useCupertino
+                  ? CupertinoIcons.calendar
+                  : Icons.calendar_today_outlined,
+              size: 20.sp,
+              color: cs.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (useCupertino && label != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.xs),
+            child: Text(
+              label!,
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+          field,
+        ],
+      );
+    }
+
+    return field;
+  }
 }

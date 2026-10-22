@@ -1,0 +1,117 @@
+import 'package:flutter/cupertino.dart' hide RefreshCallback;
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:devant_components/extensions/context_extension.dart';
+import 'package:devant_components/theme/theme_constants.dart';
+
+import '../../../../app_platform.dart';
+
+/// Standard padded content for modal bottom sheets.
+
+class AppBottomSheetContent extends StatelessWidget {
+  const AppBottomSheetContent({
+    super.key,
+    this.title,
+    required this.child,
+    this.actions,
+    this.showHandle = true,
+  });
+
+  final String? title;
+  final Widget child;
+  final List<Widget>? actions;
+  final bool showHandle;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showHandle)
+              Center(
+                child: Container(
+                  width: 40.w,
+                  height: 4.h,
+                  margin: EdgeInsets.only(bottom: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: colors.outlineVariant,
+                    borderRadius: AppBorders.full,
+                  ),
+                ),
+              ),
+            if (title != null) ...[
+              Text(
+                title!,
+                style: context.textTheme.titleMedium?.copyWith(
+                  color: colors.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: AppSpacing.md),
+            ],
+            Flexible(child: child),
+            if (actions != null && actions!.isNotEmpty) ...[
+              SizedBox(height: AppSpacing.md),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  for (var i = 0; i < actions!.length; i++) ...[
+                    if (i > 0) SizedBox(width: AppSpacing.sm),
+                    actions![i],
+                  ],
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Shows a modal bottom sheet with theme-aware styling.
+Future<T?> showAppBottomSheet<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+  bool isScrollControlled = true,
+  bool useSafeArea = true,
+  AppPlatformStyle? platform,
+}) {
+  final useCupertino = platform != null
+      ? platform == AppPlatformStyle.cupertino
+      : context.isCupertinoUi;
+  final colors = context.colors;
+
+  if (useCupertino) {
+    return showCupertinoModalPopup<T>(
+      context: context,
+      builder: (ctx) => Material(
+        color: colors.surfaceContainerHigh,
+        borderRadius: AppBorders.bottomSheet,
+        clipBehavior: Clip.antiAlias,
+        child: builder(ctx),
+      ),
+    );
+  }
+
+  return showModalBottomSheet<T>(
+    context: context,
+    builder: builder,
+
+    isScrollControlled: isScrollControlled,
+    useSafeArea: useSafeArea,
+    backgroundColor: colors.surfaceContainerHigh,
+    shape: const RoundedRectangleBorder(borderRadius: AppBorders.bottomSheet),
+  );
+}

@@ -8,8 +8,29 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  cached_network_image: 
+  device_info_plus:
+  dio: 
+  easy_localization: 
+  equatable: 
+  file_picker: ^10.3.10
   flutter:
     sdk: flutter
+  flutter_animate:
+  flutter_screenutil: 
+  flutter_svg: 
+  fpdart: 
+  go_router: 
+  image_picker: 
+  internet_connection_checker_plus: 
+  local_auth: 
+  path_provider: 
+  permission_handler: 
+  skeletonizer: 
+  smooth_page_indicator: 
+  timezone: ^0.11.2
+  url_launcher: 
+
 
 dev_dependencies:
   flutter_test:
