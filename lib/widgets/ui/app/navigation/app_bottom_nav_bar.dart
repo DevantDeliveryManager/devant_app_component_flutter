@@ -5,76 +5,7 @@ import 'package:devant_components/app_platform.dart';
 
 import '../../../../theme/theme_constants.dart';
 
-// /// A single destination in [AppBottomNavBar].
-// class AppBottomNavItem {
-//   const AppBottomNavItem({
-//     required this.label,
-//     required this.icon,
-//     this.activeIcon,
-//   });
 
-//   final String label;
-//   final IconData icon;
-//   final IconData? activeIcon;
-// }
-
-// /// Adaptive bottom navigation bar.
-
-// class AppBottomNavBar extends StatelessWidget {
-//   const AppBottomNavBar({
-//     super.key,
-//     required this.items,
-//     required this.currentIndex,
-//     required this.onTap,
-//     this.platform,
-//   });
-
-//   final List<AppBottomNavItem> items;
-//   final int currentIndex;
-//   final ValueChanged<int> onTap;
-//   final AppPlatformStyle? platform;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final useCupertino = platform != null
-//         ? platform == AppPlatformStyle.cupertino
-//         : context.isCupertinoUi;
-//     final colors = context.colors;
-
-//     if (useCupertino) {
-//       return CupertinoTabBar(
-//         currentIndex: currentIndex,
-//         onTap: onTap,
-//         backgroundColor: colors.surfaceContainer,
-//         activeColor: colors.primary,
-//         inactiveColor: colors.onSurfaceVariant,
-//         items: [
-//           for (final item in items)
-//             BottomNavigationBarItem(
-//               icon: Icon(item.icon),
-//               activeIcon: Icon(item.activeIcon ?? item.icon),
-//               label: item.label,
-//             ),
-//         ],
-//       );
-//     }
-
-//     return NavigationBar(
-//       selectedIndex: currentIndex,
-//       onDestinationSelected: onTap,
-//       backgroundColor: colors.surfaceContainer,
-//       indicatorColor: colors.secondaryContainer,
-//       destinations: [
-//         for (final item in items)
-//           NavigationDestination(
-//             icon: Icon(item.icon),
-//             selectedIcon: Icon(item.activeIcon ?? item.icon),
-//             label: item.label,
-//           ),
-//       ],
-//     );
-//   }
-// }
 
 
 /// A single destination in [AppBottomNavBar].
@@ -229,11 +160,11 @@ class _OrbItem extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  final _glow = AppBrandColors.link;
+  final _glow = AppBrandColors.navGlow;
   static final _orbGradient = RadialGradient(
     center: Alignment(0, -0.35),
     radius: 0.95,
-    colors: AppBrandColors.backgroundFallback,
+    colors: AppBrandColors.navOrb,
     stops: [0.0, 0.55, 1.0],
   );
 

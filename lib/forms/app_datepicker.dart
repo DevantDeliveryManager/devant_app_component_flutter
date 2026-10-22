@@ -7,7 +7,6 @@ import '../extensions/context_extension.dart';
 import '../theme/app_borders.dart';
 import '../theme/app_spacing.dart';
 
-
 /// A date field that opens a Material dialog or Cupertino modal picker.
 
 class AppDatePicker extends StatelessWidget {
@@ -20,6 +19,7 @@ class AppDatePicker extends StatelessWidget {
     this.firstDate,
     this.lastDate,
     this.enabled = true,
+    this.isLoading = false,
     this.platform,
   });
 
@@ -30,6 +30,10 @@ class AppDatePicker extends StatelessWidget {
   final DateTime? firstDate;
   final DateTime? lastDate;
   final bool enabled;
+
+  /// Whether the field is busy. While true it is faded and the date cannot be
+  /// changed.
+  final bool isLoading;
   final AppPlatformStyle? platform;
 
   DateTime get _first => firstDate ?? DateTime(1900);
@@ -46,7 +50,14 @@ class AppDatePicker extends StatelessWidget {
         ? platform == AppPlatformStyle.cupertino
         : context.isCupertinoUi;
     final cs = context.colors;
-    final initial = value ?? DateTime.now();
+    // Starts on the value or today, kept inside [firstDate, lastDate] so a
+    // range that ends before today (e.g. a birth date) still opens.
+    final start = value ?? DateTime.now();
+    final initial = start.isBefore(_first)
+        ? _first
+        : start.isAfter(_last)
+            ? _last
+            : start;
 
     if (useCupertino) {
       var temp = initial;
@@ -66,8 +77,10 @@ class AppDatePicker extends StatelessWidget {
                     children: [
                       CupertinoButton(
                         onPressed: () => Navigator.of(ctx).pop(),
-                        child: Text('Cancel',
-                            style: TextStyle(color: cs.onSurfaceVariant)),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: cs.onSurfaceVariant),
+                        ),
                       ),
                       CupertinoButton(
                         onPressed: () {
@@ -104,9 +117,7 @@ class AppDatePicker extends StatelessWidget {
 
     final picked = await showDatePicker(
       context: context,
-      initialDate: initial.isBefore(_first) || initial.isAfter(_last)
-          ? DateTime.now()
-          : initial,
+      initialDate: initial,
       firstDate: _first,
       lastDate: _last,
     );
@@ -122,48 +133,58 @@ class AppDatePicker extends StatelessWidget {
     final tt = context.textTheme;
     final display = value != null ? _format(value!) : hint;
 
+    final interactive = enabled && !isLoading;
+
     final field = GestureDetector(
-      onTap: enabled ? () => _pick(context) : null,
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.ms,
-        ),
-        decoration: BoxDecoration(
-          color: useCupertino ? cs.surfaceContainerHighest : null,
-          borderRadius: AppBorders.input,
-          border: Border.all(color: cs.outlineVariant),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (label != null && !useCupertino)
+      onTap: interactive ? () => _pick(context) : null,
+      child: Opacity(
+        opacity: interactive ? 1 : 0.5,
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.ms,
+          ),
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : cs.surface,
+            borderRadius: AppBorders.input,
+            border: Border.all(color: cs.outlineVariant),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (label != null && !useCupertino)
+                      Text(
+                        label!,
+                        style: tt.labelSmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
                     Text(
-                      label!,
-                      style:
-                          tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),
+                      display,
+                      style: tt.bodyLarge?.copyWith(
+                        color: value == null
+                            ? cs.onSurfaceVariant
+                            : cs.onSurface,
+                      ),
                     ),
-                  Text(
-                    display,
-                    style: tt.bodyLarge?.copyWith(
-                      color: value == null ? cs.onSurfaceVariant : cs.onSurface,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Icon(
-              useCupertino
-                  ? CupertinoIcons.calendar
-                  : Icons.calendar_today_outlined,
-              size: 20.sp,
-              color: cs.onSurfaceVariant,
-            ),
-          ],
+              Icon(
+                useCupertino
+                    ? CupertinoIcons.calendar
+                    : Icons.calendar_today_outlined,
+                size: 20.sp,
+                color: cs.onSurfaceVariant,
+              ),
+            ],
+          ),
         ),
       ),
     );

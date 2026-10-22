@@ -31,6 +31,9 @@ class AppDropdown<T> extends StatelessWidget {
     this.label,
     this.hint,
     this.enabled = true,
+    this.isLoading = false,
+    this.leading,
+    this.trailing,
     this.platform,
   });
 
@@ -40,6 +43,16 @@ class AppDropdown<T> extends StatelessWidget {
   final String? label;
   final String? hint;
   final bool enabled;
+
+  /// Whether the dropdown is busy. While true it is faded and cannot be opened.
+  final bool isLoading;
+
+  /// Optional icon/widget shown before the selected text.
+  final Widget? leading;
+
+  /// Optional widget shown at the end of the tile. Replaces the default
+  /// animated chevron.
+  final Widget? trailing;
   final AppPlatformStyle? platform;
 
   String _labelFor(T? v) {
@@ -141,7 +154,9 @@ class AppDropdown<T> extends StatelessWidget {
               ),
             ),
           GestureDetector(
-            onTap: enabled ? () => _showCupertinoPicker(context) : null,
+            onTap: enabled && !isLoading
+                ? () => _showCupertinoPicker(context)
+                : null,
             child: Container(
               width: double.infinity,
               padding: EdgeInsets.symmetric(
@@ -155,6 +170,16 @@ class AppDropdown<T> extends StatelessWidget {
               ),
               child: Row(
                 children: [
+                  if (leading != null) ...[
+                    IconTheme(
+                      data: IconThemeData(
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      child: leading!,
+                    ),
+                    SizedBox(width: AppSpacing.sm),
+                  ],
                   Expanded(
                     child: Text(
                       _labelFor(value),
@@ -164,11 +189,12 @@ class AppDropdown<T> extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(
-                    CupertinoIcons.chevron_down,
-                    size: 16.sp,
-                    color: cs.onSurfaceVariant,
-                  ),
+                  trailing ??
+                      Icon(
+                        CupertinoIcons.chevron_down,
+                        size: 16.sp,
+                        color: cs.onSurfaceVariant,
+                      ),
                 ],
               ),
             ),
@@ -177,24 +203,199 @@ class AppDropdown<T> extends StatelessWidget {
       );
     }
 
-    return DropdownButtonFormField<T>(
-      initialValue: value,
-      // Fill the available width rather than demanding the widest item's
-      // intrinsic width, which overflows inside a narrow parent.
-      isExpanded: true,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label != null)
+          Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.xs),
+            child: Text(
+              label!,
+              style: tt.labelLarge?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ),
+        _MaterialDropdownTile<T>(
+          items: items,
+          value: value,
+          text: _labelFor(value),
+          enabled: enabled,
+          isLoading: isLoading,
+          leading: leading,
+          trailing: trailing,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+/// Compact, animated tile that opens a menu anchored right under it.
+class _MaterialDropdownTile<T> extends StatefulWidget {
+  const _MaterialDropdownTile({
+    required this.items,
+    required this.value,
+    required this.text,
+    required this.enabled,
+    required this.isLoading,
+    required this.onChanged,
+    this.leading,
+    this.trailing,
+  });
+
+  final List<AppDropdownItem<T>> items;
+  final T? value;
+  final String text;
+  final bool enabled;
+  final bool isLoading;
+  final Widget? leading;
+  final Widget? trailing;
+  final ValueChanged<T?> onChanged;
+
+  @override
+  State<_MaterialDropdownTile<T>> createState() =>
+      _MaterialDropdownTileState<T>();
+}
+
+class _MaterialDropdownTileState<T> extends State<_MaterialDropdownTile<T>> {
+  bool _open = false;
+
+  Future<void> _openMenu() async {
+    final cs = Theme.of(context).colorScheme;
+    final box = context.findRenderObject() as RenderBox;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final origin =
+        box.localToGlobal(Offset(0, box.size.height + 4), ancestor: overlay);
+
+    setState(() => _open = true);
+    final picked = await showMenu<T>(
+      context: context,
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(origin.dx, origin.dy, box.size.width, 0),
+        Offset.zero & overlay.size,
+      ),
+      constraints: BoxConstraints.tightFor(width: box.size.width),
+      color: cs.surface,
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: cs.outlineVariant),
+      ),
       items: [
-        for (final item in items)
-          DropdownMenuItem<T>(
+        for (final item in widget.items)
+          PopupMenuItem<T>(
             value: item.value,
             enabled: item.enabled,
-            child: Text(item.label),
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.label,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: item.value == widget.value
+                          ? cs.primary
+                          : cs.onSurface,
+                      fontWeight: item.value == widget.value
+                          ? FontWeight.w600
+                          : FontWeight.w400,
+                    ),
+                  ),
+                ),
+                if (item.value == widget.value)
+                  Icon(Icons.check, size: 18, color: cs.primary),
+              ],
+            ),
           ),
       ],
-      onChanged: enabled ? onChanged : null,
-      decoration: InputDecoration(
-        isDense: true,
-        labelText: label,
-        hintText: hint,
+    );
+    if (mounted) setState(() => _open = false);
+    if (picked != null) widget.onChanged(picked);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    final hasValue = widget.value != null;
+
+    return Semantics(
+      button: true,
+      enabled: widget.enabled && !widget.isLoading,
+      expanded: _open,
+      child: Opacity(
+        opacity: widget.enabled && !widget.isLoading ? 1 : 0.5,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : cs.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: _open ? cs.primary : cs.outlineVariant,
+              width: _open ? 1.5 : 1,
+            ),
+          ),
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(10),
+              onTap: widget.enabled && !widget.isLoading ? _openMenu : null,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 44),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    children: [
+                      if (widget.leading != null) ...[
+                        IconTheme(
+                          data: IconThemeData(
+                            size: 20,
+                            color: _open ? cs.primary : cs.onSurfaceVariant,
+                          ),
+                          child: widget.leading!,
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Expanded(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 200),
+                          style: (tt.bodyMedium ?? const TextStyle()).copyWith(
+                            color: hasValue
+                                ? cs.onSurface
+                                : cs.onSurfaceVariant,
+                          ),
+                          child: Text(
+                            widget.text,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      widget.trailing ??
+                          AnimatedRotation(
+                            turns: _open ? 0.5 : 0,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeOut,
+                            child: Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 22,
+                              color:
+                                  _open ? cs.primary : cs.onSurfaceVariant,
+                            ),
+                          ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

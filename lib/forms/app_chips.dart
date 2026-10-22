@@ -28,9 +28,14 @@ class AppChips<T> extends FormField<List<T>> {
     Color? selectedColor,
     Color? backgroundColor,
     Color? selectedLabelColor,
+    Color? unselectedLabelColor,
     Color? borderColor,
     double borderRadius = 20,
     bool showCheckmark = true,
+
+    /// Whether the chips are busy. While true they are faded and cannot be
+    /// changed.
+    bool isLoading = false,
     super.validator,
     super.autovalidateMode,
     super.enabled,
@@ -71,39 +76,50 @@ class AppChips<T> extends FormField<List<T>> {
                    padding: const EdgeInsets.only(bottom: 8),
                    child: Text(label, style: theme.textTheme.titleSmall),
                  ),
-               Wrap(
-                 spacing: spacing,
-                 runSpacing: runSpacing,
-                 children: [
-                   for (final item in items)
-                     FilterChip(
-                       label: Text(itemLabel?.call(item) ?? item.toString()),
-                       avatar: itemAvatar?.call(item),
-                       selected: selected.contains(item),
-                       showCheckmark: showCheckmark,
-                       onSelected: enabled ? (on) => toggle(item, on) : null,
-                       selectedColor: selectedColor,
-                       backgroundColor: backgroundColor,
-                       labelStyle: selected.contains(item) &&
-                               selectedLabelColor != null
-                           ? TextStyle(color: selectedLabelColor)
-                           : null,
-                       side: borderColor != null
-                           ? BorderSide(color: borderColor)
-                           : null,
-                       shape: RoundedRectangleBorder(
-                         borderRadius: BorderRadius.circular(borderRadius),
+               Opacity(
+                 opacity: isLoading ? 0.5 : 1,
+                 child: Wrap(
+                   spacing: spacing,
+                   runSpacing: runSpacing,
+                   children: [
+                     for (final item in items)
+                       FilterChip(
+                         label: Text(itemLabel?.call(item) ?? item.toString()),
+                         avatar: itemAvatar?.call(item),
+                         selected: selected.contains(item),
+                         showCheckmark: showCheckmark,
+                         onSelected: enabled && !isLoading
+                             ? (on) => toggle(item, on)
+                             : null,
+                         selectedColor: selectedColor,
+                         backgroundColor: backgroundColor,
+                         labelStyle: switch (selected.contains(item)) {
+                           true when selectedLabelColor != null => TextStyle(
+                             color: selectedLabelColor,
+                           ),
+                           false when unselectedLabelColor != null => TextStyle(
+                             color: unselectedLabelColor,
+                           ),
+                           _ => null,
+                         },
+                         side: borderColor != null
+                             ? BorderSide(color: borderColor)
+                             : null,
+                         shape: RoundedRectangleBorder(
+                           borderRadius: BorderRadius.circular(borderRadius),
+                         ),
                        ),
-                     ),
-                 ],
+                   ],
+                 ),
                ),
                if (error != null)
                  Padding(
                    padding: const EdgeInsets.only(top: 6, left: 4),
                    child: Text(
                      error,
-                     style: theme.textTheme.bodySmall
-                         ?.copyWith(color: scheme.error),
+                     style: theme.textTheme.bodySmall?.copyWith(
+                       color: scheme.error,
+                     ),
                    ),
                  ),
              ],

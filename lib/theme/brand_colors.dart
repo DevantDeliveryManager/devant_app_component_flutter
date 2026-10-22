@@ -82,4 +82,22 @@ abstract final class AppBrandColors {
   static const Color splashCoral = Color(0xFFD2694B);
   static const Color splashGold = Color(0xFFD4AF5F);
   static const Color splashMuted = Color(0xFFA9B8B5);
+  static const Color verifiedChip = Color(0xFFE8EEE5);
+    /// A favourited healer's heart.
+  static const Color favourite = Color(0xFFC4673F);
+  /// The highlighted (Veda) tab's orb and glow.
+  static const Color navGlow = Color(0xFFD9824F);
+  static const List<Color> navOrb = [
+    Color(0xFFF1D7C6),
+    Color(0xFFD98F5E),
+    Color(0xFFC4673F),
+  ];
+
+   static const Color surfaceLowest = Colors.white;
+  static const Color surfaceMid = Color(0xFFF1E9DC);
+
+  /// Bottom sheets and menus.
+  static const Color surfaceHigh = Color(0xFFEFE6D8);
+  static const Color surfaceDim = Color(0xFFE6DCCB);
+    static const Color ctaContainer = Color(0xFFDCE6E5);
 }
