@@ -1,5 +1,3 @@
-import 'package:easy_localization/easy_localization.dart'
-    show StringTranslateExtension;
 import 'package:flutter/material.dart';
 
 import '../button/app_button.dart';
@@ -34,10 +32,9 @@ import 'app_filter_section.dart';
 Future<Map<String, Object?>?> showAppFilterSheet(
   BuildContext context, {
   required List<AppFilterSection> sections,
+  required String applyLabel,
   String? title,
-  String? applyLabel,
   String? clearLabel,
-  bool showClear = true,
   Color? backgroundColor,
   double borderRadius = 28,
 }) {
@@ -48,10 +45,9 @@ Future<Map<String, Object?>?> showAppFilterSheet(
     backgroundColor: Colors.transparent,
     builder: (_) => AppFilterSheet(
       sections: sections,
-      title: title,
       applyLabel: applyLabel,
+      title: title,
       clearLabel: clearLabel,
-      showClear: showClear,
       backgroundColor: backgroundColor,
       borderRadius: borderRadius,
     ),
@@ -66,10 +62,9 @@ class AppFilterSheet extends StatefulWidget {
   const AppFilterSheet({
     super.key,
     required this.sections,
+    required this.applyLabel,
     this.title,
-    this.applyLabel,
     this.clearLabel,
-    this.showClear = true,
     this.onApply,
     this.backgroundColor,
     this.borderRadius = 28,
@@ -78,17 +73,14 @@ class AppFilterSheet extends StatefulWidget {
   /// Sections shown top to bottom.
   final List<AppFilterSection> sections;
 
-  /// Heading of the sheet. Defaults to the `filter_sheet.title` translation.
+  /// Label of the apply button.
+  final String applyLabel;
+
+  /// Heading of the sheet. Omit for no heading.
   final String? title;
 
-  /// Label of the apply button. Defaults to `filter_sheet.apply`.
-  final String? applyLabel;
-
-  /// Label of the reset button. Defaults to `filter_sheet.clear_all`.
+  /// Label of the reset button. Omit to hide the button.
   final String? clearLabel;
-
-  /// Whether the reset button is shown.
-  final bool showClear;
 
   /// Called with the draft values when the user applies.
   final ValueChanged<Map<String, Object?>>? onApply;
@@ -208,26 +200,23 @@ class _AppFilterSheetState extends State<AppFilterSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.title ?? 'filter_sheet.title'.tr(),
-                    style: text.titleLarge,
-                  ),
-                  if (widget.showClear)
-                    TextButton(
-                      onPressed: _clearAll,
-                      style: TextButton.styleFrom(
-                        visualDensity: VisualDensity.compact,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              if (widget.title != null || widget.clearLabel != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (widget.title != null)
+                      Text(widget.title!, style: text.titleLarge),
+                    if (widget.clearLabel != null)
+                      TextButton(
+                        onPressed: _clearAll,
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(widget.clearLabel!),
                       ),
-                      child: Text(
-                        widget.clearLabel ?? 'filter_sheet.clear_all'.tr(),
-                      ),
-                    ),
-                ],
-              ),
+                  ],
+                ),
               for (final section in widget.sections) ...[
                 const SizedBox(height: 16),
                 Text(
@@ -245,7 +234,7 @@ class _AppFilterSheetState extends State<AppFilterSheet> {
               SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  label: widget.applyLabel ?? 'filter_sheet.apply'.tr(),
+                  label: widget.applyLabel,
                   onPressed: _apply,
                 ),
               ),
