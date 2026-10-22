@@ -1,0 +1,17 @@
+{
+  "filter_sheet": {
+    "title": "Filters",
+    "clear_all": "Clear all",
+    "apply": "Apply"
+  },
+  "healer_card": {
+    "years": "{} yrs",
+    "favourite_add": "Add to favourites",
+    "favourite_remove": "Remove from favourites",
+    "price_from": "From",
+    "next_session": "Next: {}"
+  },
+  "healer_profile": {
+    "free": "Free"
+  }
+}

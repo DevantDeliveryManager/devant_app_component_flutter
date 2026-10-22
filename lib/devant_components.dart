@@ -10,6 +10,7 @@ export 'button/app_button.dart';
 
 /// [Constants] exports
 export 'constants/country_codes.dart';
+export 'constants/locale_keys.dart';
 export 'constants/rule_keys.dart';
 export 'constants/service_kind.dart';
 export 'constants/user_role.dart';
