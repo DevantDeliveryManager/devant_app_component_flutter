@@ -11,6 +11,7 @@ dependencies:
   cached_network_image: 
   device_info_plus:
   dio: 
+  easy_localization: ^3.0.8
   equatable: 
   file_picker: ^10.3.10
   flutter:
