@@ -76,4 +76,10 @@ abstract final class AppBrandColors {
 
   /// Screen background.
   static Color get pageBackground => _active.pageBackground;
+
+
+  static const Color splashBg = Color(0xFF1F3A3E);
+  static const Color splashCoral = Color(0xFFD2694B);
+  static const Color splashGold = Color(0xFFD4AF5F);
+  static const Color splashMuted = Color(0xFFA9B8B5);
 }
