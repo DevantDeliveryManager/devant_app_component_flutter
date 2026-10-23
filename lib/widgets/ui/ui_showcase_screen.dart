@@ -8,6 +8,7 @@ import 'package:devant_components/widgets/ui/app/actions/app_chip.dart';
 import 'package:devant_components/widgets/ui/app/actions/app_icon_button.dart';
 
 import '../../theme/theme_constants.dart';
+import 'app/card/healer_tile.dart';
 import 'app/display/app_avatar.dart';
 import 'app/display/app_badge.dart';
 import 'app/display/app_card.dart';
@@ -72,6 +73,21 @@ class UiShowcaseScreen extends StatelessWidget {
             child: Text(
               'Body content',
               style: context.textTheme.bodyMedium,
+            ),
+          ),
+          SizedBox(height: AppSpacing.sm),
+          SizedBox(
+            height: 312,
+            child: HealerTile(
+              name: 'Asha Rao',
+              meta: 'Yoga & Breathwork · Rishikesh · 12 yrs',
+              quote: 'Breath is the bridge between body and mind.',
+              address: 'Rishikesh',
+              mode: 'Online · In person',
+              chips: const ['Yoga', 'Breathwork'],
+              priceCaption: 'From',
+              price: '₹4,500',
+              onTap: () {},
             ),
           ),
           SizedBox(height: AppSpacing.sm),

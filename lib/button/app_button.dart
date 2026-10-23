@@ -43,6 +43,7 @@ class AppButton extends StatelessWidget {
     this.heightValue,
     this.widthValue,
     this.horizontalPadding,
+    this.padding,
     this.fontSize,
     this.fontWeight = FontWeight.w600,
     this.borderRadius = const BorderRadius.all(Radius.circular(12)),
@@ -109,6 +110,10 @@ class AppButton extends StatelessWidget {
   /// Explicit horizontal padding; overrides the [height] preset padding.
   final double? horizontalPadding;
 
+  /// Explicit padding around the content; overrides [horizontalPadding] and
+  /// the [height] preset padding.
+  final EdgeInsetsGeometry? padding;
+
   /// Explicit label font size; overrides the [height] preset font size.
   final double? fontSize;
 
@@ -160,14 +165,16 @@ class AppButton extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final isDisabled = onPressed == null || isLoading;
 
-    final double buttonHeight = heightValue ??
+    final double buttonHeight =
+        heightValue ??
         switch (height) {
           ButtonSize.small => 36,
           ButtonSize.medium => 44,
           ButtonSize.large => 56,
         };
 
-    final double? buttonWidth = widthValue ??
+    final double? buttonWidth =
+        widthValue ??
         switch (width) {
           ButtonSize.small => 100,
           ButtonSize.medium => 150,
@@ -175,14 +182,16 @@ class AppButton extends StatelessWidget {
           null => null,
         };
 
-    final double hPadding = horizontalPadding ??
+    final double hPadding =
+        horizontalPadding ??
         switch (height) {
           ButtonSize.small => 12,
           ButtonSize.medium => 20,
           ButtonSize.large => 28,
         };
 
-    final double resolvedFontSize = fontSize ??
+    final double resolvedFontSize =
+        fontSize ??
         switch (height) {
           ButtonSize.small => 12,
           ButtonSize.medium => 14,
@@ -191,35 +200,35 @@ class AppButton extends StatelessWidget {
 
     final (bg, fg, border) = switch (variant) {
       ButtonVariant.primary => (
-          color ?? cs.primary,
-          textColor ?? cs.onPrimary,
-          null,
-        ),
+        color ?? cs.primary,
+        textColor ?? cs.onPrimary,
+        null,
+      ),
       ButtonVariant.secondary => (
-          color ?? cs.secondaryContainer,
-          textColor ?? cs.onSecondaryContainer,
-          null,
-        ),
+        color ?? cs.secondaryContainer,
+        textColor ?? cs.onSecondaryContainer,
+        null,
+      ),
       ButtonVariant.outline => (
-          Colors.transparent,
-          textColor ?? cs.primary,
-          BorderSide(color: cs.outline, width: borderWidth),
-        ),
+        Colors.transparent,
+        textColor ?? cs.primary,
+        BorderSide(color: cs.outline, width: borderWidth),
+      ),
       ButtonVariant.ghost => (
-          Colors.transparent,
-          textColor ?? cs.primary,
-          null,
-        ),
+        Colors.transparent,
+        textColor ?? cs.primary,
+        null,
+      ),
       ButtonVariant.danger => (
-          color ?? cs.error,
-          textColor ?? cs.onError,
-          null,
-        ),
+        color ?? cs.error,
+        textColor ?? cs.onError,
+        null,
+      ),
       ButtonVariant.success => (
-          color ?? successColor ?? cs.tertiary,
-          textColor ?? onSuccessColor ?? cs.onTertiary,
-          null,
-        ),
+        color ?? successColor ?? cs.tertiary,
+        textColor ?? onSuccessColor ?? cs.onTertiary,
+        null,
+      ),
     };
 
     final resolvedBorder = borderColor != null
@@ -279,8 +288,9 @@ class AppButton extends StatelessWidget {
       height: buttonHeight,
       child: useCupertino
           ? CupertinoButton(
-              padding: EdgeInsets.symmetric(horizontal: hPadding),
-              color: variant == ButtonVariant.outline ||
+              padding: padding ?? EdgeInsets.symmetric(horizontal: hPadding),
+              color:
+                  variant == ButtonVariant.outline ||
                       variant == ButtonVariant.ghost
                   ? null
                   : bg,
@@ -296,7 +306,12 @@ class AppButton extends StatelessWidget {
               style: TextButton.styleFrom(
                 backgroundColor: bg,
                 foregroundColor: fg,
-                padding: EdgeInsets.symmetric(horizontal: hPadding),
+                padding: padding ?? EdgeInsets.symmetric(horizontal: hPadding),
+                // The app theme's TextButton minimum size must not keep a
+                // compact, explicitly padded button wide.
+                minimumSize: padding != null ? Size.zero : null,
+                tapTargetSize:
+                    padding != null ? MaterialTapTargetSize.shrinkWrap : null,
                 shape: RoundedRectangleBorder(
                   borderRadius: borderRadius,
                   side: resolvedBorder ?? BorderSide.none,
