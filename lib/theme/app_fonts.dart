@@ -12,8 +12,7 @@ abstract final class AppFonts {
   static const String inter = 'Inter';
 
   /// Playfair — weights 300, 400 (+ italic), 500, 600, 700.
-  static const String playfair9pt = 'Playfair9pt';
-  static const String playfair144pt = 'Playfair144pt';
+  static const String roboto = 'Roboto';
 
   /// The font the whole app uses unless a widget picks another.
   static const String defaultFamily = inter;
@@ -25,8 +24,7 @@ abstract final class AppFonts {
 /// Text('Hello', style: context.textTheme.bodyLarge?.inter)
 /// ```
 extension AppFontStyle on TextStyle {
-  TextStyle get playfair9pt => copyWith(fontFamily: AppFonts.playfair9pt);
-  TextStyle get playfair144pt => copyWith(fontFamily: AppFonts.playfair144pt);
+  TextStyle get roboto => copyWith(fontFamily: AppFonts.roboto);
   TextStyle get inter => copyWith(fontFamily: AppFonts.inter);
 
 
