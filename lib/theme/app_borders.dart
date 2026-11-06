@@ -19,8 +19,14 @@ abstract final class AppBorders {
   /// 16 pt — large rounding for modals, bottom sheets.
   static const BorderRadius lg = BorderRadius.all(Radius.circular(16));
 
+  /// 20 pt — between [lg] and [xl]: tiles and inset panels in cards.
+  static const BorderRadius ml = BorderRadius.all(Radius.circular(20));
+
   /// 24 pt — extra large rounding for dialogs, feature cards.
   static const BorderRadius xl = BorderRadius.all(Radius.circular(24));
+
+  /// 28 pt — hero cards.
+  static const BorderRadius xxl = BorderRadius.all(Radius.circular(28));
 
   /// 28 pt — Material 3 bottom sheet top radius.
   static const BorderRadius bottomSheet = BorderRadius.vertical(

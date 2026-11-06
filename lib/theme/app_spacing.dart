@@ -7,9 +7,13 @@ abstract final class AppSpacing {
 
   static const double _xxs = 2;
   static const double _xs = 4;
+  static const double _xsm = 6;
   static const double _sm = 8;
+  static const double _sml = 10;
   static const double _ms = 12;
+  static const double _msl = 14;
   static const double _md = 16;
+  static const double _mdl = 18;
   static const double _ml = 20;
   static const double _lg = 24;
   static const double _xl = 32;
@@ -22,14 +26,26 @@ abstract final class AppSpacing {
   /// 4 pt — tightest spacing, between tightly coupled elements.
   static double get xs => _xs.r;
 
+  /// 6 pt — half step between [xs] and [sm]: label-to-caption gaps.
+  static double get xsm => _xsm.r;
+
   /// 8 pt — small spacing, inside compact components (chip padding, icon gap).
   static double get sm => _sm.r;
+
+  /// 10 pt — half step between [sm] and [ms]: icon-to-text and row gaps.
+  static double get sml => _sml.r;
 
   /// 12 pt — medium-small, inner card padding on dense layouts.
   static double get ms => _ms.r;
 
+  /// 14 pt — half step between [ms] and [md]: gaps between stacked cards.
+  static double get msl => _msl.r;
+
   /// 16 pt — base unit, standard component padding and list item gaps.
   static double get md => _md.r;
+
+  /// 18 pt — half step between [md] and [ml]: hero card padding.
+  static double get mdl => _mdl.r;
 
   /// 20 pt — medium-large, comfortable section spacing.
   static double get ml => _ml.r;

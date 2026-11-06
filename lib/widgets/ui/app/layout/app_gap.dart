@@ -6,9 +6,13 @@ import 'package:devant_components/theme/app_spacing.dart';
 enum AppGapSize {
   xxs,
   xs,
+  xsm,
   sm,
+  sml,
   ms,
+  msl,
   md,
+  mdl,
   ml,
   lg,
   xl,
@@ -31,17 +35,33 @@ class AppGap extends StatelessWidget {
       : value = null,
         token = AppGapSize.xs;
 
+  const AppGap.xsm({super.key, this.axis = Axis.vertical})
+      : value = null,
+        token = AppGapSize.xsm;
+
   const AppGap.sm({super.key, this.axis = Axis.vertical})
       : value = null,
         token = AppGapSize.sm;
+
+  const AppGap.sml({super.key, this.axis = Axis.vertical})
+      : value = null,
+        token = AppGapSize.sml;
 
   const AppGap.ms({super.key, this.axis = Axis.vertical})
       : value = null,
         token = AppGapSize.ms;
 
+  const AppGap.msl({super.key, this.axis = Axis.vertical})
+      : value = null,
+        token = AppGapSize.msl;
+
   const AppGap.md({super.key, this.axis = Axis.vertical})
       : value = null,
         token = AppGapSize.md;
+
+  const AppGap.mdl({super.key, this.axis = Axis.vertical})
+      : value = null,
+        token = AppGapSize.mdl;
 
   const AppGap.ml({super.key, this.axis = Axis.vertical})
       : value = null,
@@ -72,9 +92,13 @@ class AppGap extends StatelessWidget {
     return switch (token!) {
       AppGapSize.xxs => AppSpacing.xxs,
       AppGapSize.xs => AppSpacing.xs,
+      AppGapSize.xsm => AppSpacing.xsm,
       AppGapSize.sm => AppSpacing.sm,
+      AppGapSize.sml => AppSpacing.sml,
       AppGapSize.ms => AppSpacing.ms,
+      AppGapSize.msl => AppSpacing.msl,
       AppGapSize.md => AppSpacing.md,
+      AppGapSize.mdl => AppSpacing.mdl,
       AppGapSize.ml => AppSpacing.ml,
       AppGapSize.lg => AppSpacing.lg,
       AppGapSize.xl => AppSpacing.xl,
