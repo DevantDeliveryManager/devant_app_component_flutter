@@ -1,3 +1,4 @@
+export 'package:devant_components/widgets/ui/app/navigation/app_back_button.dart';
 export 'package:devant_components/widgets/ui/app/navigation/app_bottom_nav_bar.dart';
 export 'package:devant_components/widgets/ui/app/navigation/app_navigation_drawer.dart';
 export 'package:devant_components/widgets/ui/app/navigation/app_page_indicator.dart';
