@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:devant_components/theme/brand_colors.dart';
+import 'package:devant_components/widgets/ui/app/navigation/app_circle_icon_button.dart';
 
 /// The brand's round frosted back button: a chevron on paper, softly lifted.
 ///
@@ -10,7 +9,7 @@ class AppBackButton extends StatelessWidget {
   const AppBackButton({super.key, this.onPressed, this.enabled = true});
 
   /// The button's width and height, before screen scaling.
-  static const double size = 44;
+  static const double size = AppCircleIconButton.size;
 
   /// What a tap does; going back a screen when not given.
   final VoidCallback? onPressed;
@@ -20,40 +19,12 @@ class AppBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: AppBrandColors.plum.withValues(alpha: 0.35),
-            blurRadius: 16,
-            spreadRadius: -10,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Material(
-        color: AppBrandColors.fieldFill.withValues(alpha: 0.85),
-        shape: CircleBorder(
-          side: BorderSide(color: AppBrandColors.plum.withValues(alpha: 0.085)),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: !enabled
-              ? null
-              : onPressed ?? () => Navigator.of(context).maybePop(),
-          child: SizedBox.square(
-            dimension: size.r,
-            child: Icon(
-              Icons.chevron_left_rounded,
-              color: AppBrandColors.plum,
-              semanticLabel: MaterialLocalizations.of(
-                context,
-              ).backButtonTooltip,
-            ),
-          ),
-        ),
-      ),
+    return AppCircleIconButton(
+      icon: Icons.chevron_left_rounded,
+      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+      onPressed: !enabled
+          ? null
+          : onPressed ?? () => Navigator.of(context).maybePop(),
     );
   }
 }
