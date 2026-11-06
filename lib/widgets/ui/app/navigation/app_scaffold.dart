@@ -20,6 +20,7 @@ class AppScaffold extends StatelessWidget {
     this.backgroundColor,
     this.resizeToAvoidBottomInset = true,
     this.platform,
+    this.isExtendBody = false,
   });
 
   final PreferredSizeWidget? appBar;
@@ -31,6 +32,7 @@ class AppScaffold extends StatelessWidget {
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;
   final AppPlatformStyle? platform;
+  final bool? isExtendBody;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +88,7 @@ class AppScaffold extends StatelessWidget {
       child: Scaffold(
         appBar: appBar,
         body: body,
+        extendBody: isExtendBody ?? false,
         bottomNavigationBar: bottomNavigationBar,
         floatingActionButton: floatingActionButton,
         drawer: drawer,
