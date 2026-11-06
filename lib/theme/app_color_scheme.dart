@@ -35,6 +35,7 @@ class AppColorScheme extends Equatable {
     required this.id,
     required this.brightness,
     required this.cta,
+    required this.ctaDeep,
     required this.onCta,
     required this.ctaLight,
     required this.glassFill,
@@ -42,6 +43,7 @@ class AppColorScheme extends Equatable {
     required this.scrimMiddle,
     required this.scrimBottom,
     required this.backgroundFallback,
+    required this.deep,
     required this.plum,
     required this.plumMuted,
     required this.subtle,
@@ -91,6 +93,7 @@ class AppColorScheme extends Equatable {
       id: id,
       brightness: brightness,
       cta: primary,
+      ctaDeep: primaryDeep,
       onCta: onPrimary,
       ctaLight: Color.lerp(primary, surface, 0.35)!,
       glassFill: primary.withValues(alpha: 0.2),
@@ -98,6 +101,7 @@ class AppColorScheme extends Equatable {
       scrimMiddle: primary.withValues(alpha: 0.1),
       scrimBottom: deep.withValues(alpha: 0.7),
       backgroundFallback: [deep, primaryDeep, bgAlt],
+      deep: deep,
       plum: ink,
       plumMuted: ink2,
       subtle: muted,
@@ -129,6 +133,9 @@ class AppColorScheme extends Equatable {
 
   /// Primary call to action.
   final Color cta;
+
+  /// Deeper CTA: the foot of the primary button's gradient.
+  final Color ctaDeep;
   final Color onCta;
 
   /// Lighter CTA, for gradients and highlights.
@@ -144,6 +151,9 @@ class AppColorScheme extends Equatable {
 
   /// Shown while artwork loads.
   final List<Color> backgroundFallback;
+
+  /// The theme's deepest tone, for dark tints and shadows.
+  final Color deep;
 
   /// Primary text.
   final Color plum;
@@ -204,23 +214,26 @@ abstract final class AppColorSchemes {
     AppColorSchemeId.gangaDawn: AppColorScheme.fromPalette(
       id: AppColorSchemeId.gangaDawn,
       brightness: Brightness.light,
-      bg: const Color(0xFFF6F0E6),
+      // The sign-in screen's palette: page, paper, ink, supporting copy,
+      // captions, the primary button's gradient and label, clay and gold.
+      bg: const Color(0xFFF2F5EF),
       bgAlt: const Color(0xFFEDE3D3),
-      surface: const Color(0xFFFFFDF9),
-      ink: const Color(0xFF1D2A2C),
-      ink2: const Color(0xFF4A5657),
-      muted: const Color(0xFF66615A),
-      line: const Color(0x242F5358),
-      primary: const Color(0xFF2F5358),
-      primaryDeep: const Color(0xFF1E3A3E),
-      onPrimary: const Color(0xFFFFFDF9),
-      accent: const Color(0xFFC0704F),
+      surface: const Color(0xFFFFFEFA),
+      ink: const Color(0xFF183F43),
+      ink2: const Color(0xFF6A7E78),
+      muted: const Color(0xFF9AA8A2),
+      line: const Color(0x2422555A),
+      primary: const Color(0xFF22555A),
+      primaryDeep: const Color(0xFF173C40),
+      onPrimary: const Color(0xFFFBF7EE),
+      accent: const Color(0xFFB86F52),
       accentStrong: const Color(0xFF98512F),
       accentDeep: const Color(0xFFA55A3B),
-      gold: const Color(0xFFC9A45C),
+      gold: const Color(0xFFC6A45C),
       softSage: const Color(0xFFE8EEE5),
       softGold: const Color(0xFFF4EAD6),
-      deep: const Color(0xFF1E3A3E),
+      // The primary button's shadow.
+      deep: const Color(0xFF0F2C2F),
       danger: const Color(0xFFB3261E),
       hills: const [Color(0xFF8FA68E), Color(0xFF5E7F6F), Color(0xFF2F5358)],
       sky: const Color(0xFFE7B48C),

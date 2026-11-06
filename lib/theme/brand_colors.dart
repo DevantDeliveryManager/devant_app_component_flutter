@@ -24,6 +24,9 @@ abstract final class AppBrandColors {
   static Color get cta => _active.cta;
   static Color get onCta => _active.onCta;
 
+  /// Deeper CTA, the foot of a primary button's gradient.
+  static Color get ctaDeep => _active.ctaDeep;
+
   /// Lighter CTA, for gradients, highlights and decorative orbs.
   static Color get ctaLight => _active.ctaLight;
 
@@ -77,6 +80,15 @@ abstract final class AppBrandColors {
   /// Screen background.
   static Color get pageBackground => _active.pageBackground;
 
+  /// The brand's gold: focus rings and fine rules.
+  static Color get gold => _active.gold;
+
+  /// The brand's second colour, for accents on text.
+  static Color get accent => _active.accent;
+
+  /// The theme's deepest tone, for dark tints and shadows.
+  static Color get deep => _active.deep;
+
 
   static const Color splashBg = Color(0xFF1F3A3E);
   static const Color splashCoral = Color(0xFFD2694B);
@@ -101,3 +113,4 @@ abstract final class AppBrandColors {
   static const Color surfaceDim = Color(0xFFE6DCCB);
     static const Color ctaContainer = Color(0xFFDCE6E5);
 }
+                 
