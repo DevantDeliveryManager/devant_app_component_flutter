@@ -12,6 +12,7 @@ class AppCircleIconButton extends StatelessWidget {
     required this.onPressed,
     this.tooltip,
     this.hasDot = false,
+    this.diameter = size,
   });
 
   /// The button's width and height, before screen scaling.
@@ -26,6 +27,9 @@ class AppCircleIconButton extends StatelessWidget {
   final String? tooltip;
 
   final bool hasDot;
+
+  /// Smaller for in-card controls, e.g. a month's arrows.
+  final double diameter;
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +58,13 @@ class AppCircleIconButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           child: SizedBox.square(
-            dimension: size.r,
+            dimension: diameter.r,
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Icon(
                   icon,
-                  size: 22.r,
+                  size: (diameter * 0.5).r,
                   color: isEnabled ? ink : ink.withValues(alpha: 0.35),
                 ),
                 if (hasDot)
