@@ -1,6 +1,7 @@
 export 'package:devant_components/widgets/ui/app/inputs/app_checkbox.dart';
 export 'package:devant_components/widgets/ui/app/inputs/app_date_picker.dart';
 export 'package:devant_components/widgets/ui/app/inputs/app_dropdown.dart';
+export 'package:devant_components/widgets/ui/app/inputs/app_label_field.dart';
 export 'package:devant_components/widgets/ui/app/inputs/app_number_stepper.dart';
 export 'package:devant_components/widgets/ui/app/inputs/app_otp_field.dart';
 export 'package:devant_components/widgets/ui/app/inputs/app_password_field.dart';
