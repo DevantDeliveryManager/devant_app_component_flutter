@@ -5,6 +5,7 @@ export 'package:devant_components/widgets/ui/app/display/app_circular_progress.d
 export 'package:devant_components/widgets/ui/app/display/app_data_table.dart';
 export 'package:devant_components/widgets/ui/app/display/app_divider.dart';
 export 'package:devant_components/widgets/ui/app/display/app_expansion_panel.dart';
+export 'package:devant_components/widgets/ui/app/display/app_initials_avatar.dart';
 export 'package:devant_components/widgets/ui/app/display/app_icon.dart';
 export 'package:devant_components/widgets/ui/app/display/app_list_tile.dart';
 export 'package:devant_components/widgets/ui/app/display/app_progress_bar.dart';
